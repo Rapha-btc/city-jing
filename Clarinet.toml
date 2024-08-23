@@ -1,0 +1,34 @@
+[project]
+name = 'OTC-city-jing'
+description = ''
+authors = []
+telemetry = false
+cache_dir = './.cache'
+requirements = []
+
+[contracts.ft-stx]
+path = 'contracts/ft-stx.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.stx-ft]
+path = 'contracts/stx-ft.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.fees]
+path = 'contracts/fees.clar'
+clarity_version = 2
+epoch = 2.5
+
+
+
+
+[repl.analysis]
+passes = ['check_checker']
+
+[repl.analysis.check_checker]
+strict = false
+trusted_sender = false
+trusted_caller = false
+callee_filter = false

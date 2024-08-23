@@ -5,14 +5,8 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 requirements = []
-
-[contracts.ft-stx]
-path = 'contracts/ft-stx.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.stx-ft]
-path = 'contracts/stx-ft.clar'
+[contracts.fair]
+path = 'contracts/fair.clar'
 clarity_version = 2
 epoch = 2.5
 
@@ -21,9 +15,35 @@ path = 'contracts/fees.clar'
 clarity_version = 2
 epoch = 2.5
 
+[contracts.ft-stx]
+path = 'contracts/ft-stx.clar'
+clarity_version = 2
+epoch = 2.5
 
+[contracts.not]
+path = 'contracts/not.clar'
+clarity_version = 2
+epoch = 2.5
 
+[contracts.send-many-memo]
+path = 'contracts/send-many-memo.clar'
+clarity_version = 2
+epoch = 2.5
 
+[contracts.sip-010-trait-ft-standard]
+path = 'contracts/sip-010-trait-ft-standard.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.stx-ft]
+path = 'contracts/stx-ft.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.welsh]
+path = 'contracts/welsh.clar'
+clarity_version = 2
+epoch = 2.5
 [repl.analysis]
 passes = ['check_checker']
 

@@ -1,4 +1,4 @@
-(use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
 ;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
 (define-constant THIS-CONTRACT (as-contract tx-sender))
 
@@ -20,10 +20,10 @@
 
 ;; helper function to transfer stx to a principal with memo
 (define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
-  (contract-call? 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo send-many
+  (contract-call? .send-many-memo send-many
     (list {to: to,
             ustx: ustx,
-            memo: memo}))) 
+            memo: memo}))) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo
 
 ;; create a swap between btc and fungible token
 (define-public (offer (ustx uint) (amount uint) (ft-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))

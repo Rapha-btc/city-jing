@@ -1,4 +1,4 @@
-(use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
 ;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
 (define-constant THIS-CONTRACT (as-contract tx-sender))
 
@@ -24,10 +24,10 @@
     (ok true)))
 
 (define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
-  (contract-call? 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo send-many
+  (contract-call? .send-many-memo send-many
     (list {to: to,
             ustx: ustx,
-            memo: memo}))) 
+            memo: memo}))) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo
 
 (define-public (offer (amount uint) (ustx uint) (stx-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
   (let ((id (var-get next-id)))
@@ -61,7 +61,8 @@
 ;; only ft-sender can cancel the swap and get the fees back
 (define-public (cancel (id uint) (ft <fungible-token>) (fees <fees-trait>))
   (let ((swap (unwrap! (map-get? swaps id) ERR_INVALID_ID))
-    (amount (get amount swap)))
+    (amount (get amount swap))
+    (ustx (get ustx swap)))
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
       (asserts! (is-eq tx-sender (get ft-sender swap)) ERR_NOT_FT_SENDER)

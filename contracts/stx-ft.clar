@@ -2,6 +2,10 @@
 ;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
 (define-constant THIS-CONTRACT (as-contract tx-sender))
 
+;; Define the two allowed fee contracts
+(define-constant YIN-FEES .fees)
+(define-constant YANG-FEES .fake-fees)
+
 ;; the fee structure is defined by the calling client
 (define-trait fees-trait
   ((get-fees (uint) (response uint uint))
@@ -25,9 +29,14 @@
             ustx: ustx,
             memo: memo}))) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo
 
+(define-private (is-valid-fees (fees <fees-trait>))
+  (or (is-eq (contract-of fees) YIN-FEES)
+      (is-eq (contract-of fees) YANG-FEES)))
+
 ;; create a swap between btc and fungible token
 (define-public (offer (ustx uint) (amount uint) (ft-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
   (let ((id (var-get next-id)))
+    (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
     (asserts! (map-insert swaps id
       {ustx: ustx, stx-sender: tx-sender, amount: amount, ft-sender: ft-sender,
          open: true, ft: (contract-of ft), fees: (contract-of fees)}) ERR_INVALID_ID)
@@ -61,6 +70,7 @@
     (ustx (get ustx swap)))
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
+      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
       (asserts! (is-eq tx-sender (get stx-sender swap)) ERR_NOT_STX_SENDER)
       (asserts! (get open swap) ERR_ALREADY_DONE) 
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
@@ -101,6 +111,7 @@
       (asserts! (get open swap) ERR_ALREADY_DONE)
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
+      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
       (asserts! (is-eq tx-sender stx-receiver) ERR_INVALID_STX_RECEIVER) ;; assert out if the receiver is predetermined 
       (try! (contract-call? fees pay-fees ustx))

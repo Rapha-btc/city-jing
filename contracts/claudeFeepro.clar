@@ -1,10 +1,9 @@
-(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
-;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
+(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait)
 (define-constant THIS-CONTRACT (as-contract tx-sender))
 
 ;; Define the two allowed fee contracts
-(define-constant YIN-FEES .fees)
-(define-constant YANG-FEES .fake-fees)
+(define-constant FEES-CONTRACT .fees)
+(define-constant FAKE-FEES-CONTRACT .fake-fees)
 
 ;; the fee structure is defined by the calling client
 (define-trait fees-trait
@@ -16,7 +15,6 @@
 (define-map swaps uint {amount: uint, ft-sender: principal, ustx: uint, stx-sender: (optional principal), open: bool, ft: principal, fees: principal})
 (define-data-var next-id uint u0)
 
-;; read-only function to get swap details by id
 (define-read-only (get-swap (id uint))
   (match (map-get? swaps id)
     swap (ok swap)
@@ -31,19 +29,20 @@
   (contract-call? .send-many-memo send-many
     (list {to: to,
             ustx: ustx,
-            memo: memo}))) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo
+            memo: memo})))
 
-(define-private (is-valid-fees (fees <fees-trait>))
-  (or (is-eq (contract-of fees) YIN-FEES)
-      (is-eq (contract-of fees) YANG-FEES)))
+(define-private (is-valid-fees-contract (fees-contract principal))
+  (or (is-eq fees-contract FEES-CONTRACT)
+      (is-eq fees-contract FAKE-FEES-CONTRACT)))
 
 (define-public (offer (amount uint) (ustx uint) (stx-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
-  (let ((id (var-get next-id)))
-    (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
+  (let ((id (var-get next-id))
+        (fees-contract (contract-of fees)))
+    (asserts! (is-valid-fees-contract fees-contract) ERR_INVALID_FEES_CONTRACT)
     (asserts! (map-insert swaps id
       {amount: amount, ft-sender: tx-sender, ustx: ustx, stx-sender: stx-sender,
-         open: true, ft: (contract-of ft), fees: (contract-of fees)}) ERR_INVALID_ID)
-        (print 
+         open: true, ft: (contract-of ft), fees: fees-contract}) ERR_INVALID_ID)
+    (print 
       {
         type: "offer",
         swap_type: "FT-STX",
@@ -52,7 +51,7 @@
         creator: tx-sender,
         counterparty: stx-sender,
         open: true,
-        fees: (contract-of fees),
+        fees: fees-contract,
         in_contract: (contract-of ft),
         in_amount: amount,
         in_decimals: (unwrap! (contract-call? ft get-decimals) ERR_FT_FAILURE),
@@ -67,14 +66,13 @@
       success (ok id)
       error (err (* error u100)))))
 
-;; only ft-sender can cancel the swap and get the fees back
 (define-public (cancel (id uint) (ft <fungible-token>) (fees <fees-trait>))
   (let ((swap (unwrap! (map-get? swaps id) ERR_INVALID_ID))
     (amount (get amount swap))
     (ustx (get ustx swap)))
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
-      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
+      (asserts! (is-valid-fees-contract (contract-of fees)) ERR_INVALID_FEES_CONTRACT)
       (asserts! (is-eq tx-sender (get ft-sender swap)) ERR_NOT_FT_SENDER)
       (asserts! (get open swap) ERR_ALREADY_DONE) 
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
@@ -103,11 +101,7 @@
       success (ok success)
       error (err (* error u100)))))
 
-;; any user can submit a tx that contains the swap
-(define-public (submit-swap
-    (id uint)
-    (ft <fungible-token>)
-    (fees <fees-trait>))
+(define-public (submit-swap (id uint) (ft <fungible-token>) (fees <fees-trait>))
   (let ((swap (unwrap! (map-get? swaps id) ERR_INVALID_ID))
     (ustx (get ustx swap))
     (ft-receiver (default-to tx-sender (get stx-sender swap)))
@@ -115,9 +109,9 @@
       (asserts! (get open swap) ERR_ALREADY_DONE)
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
-      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
+      (asserts! (is-valid-fees-contract (contract-of fees)) ERR_INVALID_FEES_CONTRACT)
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
-      (asserts! (is-eq tx-sender ft-receiver) ERR_INVALID_FT_RECEIVER) ;; ft-receiver is tx-sender  / assert out if the receiver is predetermined 
+      (asserts! (is-eq tx-sender ft-receiver) ERR_INVALID_FT_RECEIVER)
       (try! (contract-call? fees pay-fees ustx))
       (print 
         {
@@ -150,11 +144,8 @@
 (define-constant ERR_ALREADY_DONE (err u7))
 (define-constant ERR_INVALID_FUNGIBLE_TOKEN (err u8))
 (define-constant ERR_INVALID_FT_RECEIVER (err u9))
-(define-constant ERR_INVALID_FEES (err u10))
+(define-constant ERR_INVALID_FEES_CONTRACT (err u10))
 (define-constant ERR_INVALID_FEES_TRAIT (err u11))
 (define-constant ERR_NOT_FT_SENDER (err u12))
 (define-constant ERR_FT_FAILURE (err u13))
 (define-constant ERR_NATIVE_FAILURE (err u99))
-;; (err u1) -- sender does not have enough balance to transfer 
-;; (err u2) -- sender and recipient are the same principal 
-;; (err u3) -- amount to send is non-positive

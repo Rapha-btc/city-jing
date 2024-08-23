@@ -74,7 +74,6 @@
     (ustx (get ustx swap)))
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
-      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
       (asserts! (is-eq tx-sender (get ft-sender swap)) ERR_NOT_FT_SENDER)
       (asserts! (get open swap) ERR_ALREADY_DONE) 
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
@@ -115,7 +114,6 @@
       (asserts! (get open swap) ERR_ALREADY_DONE)
       (asserts! (is-eq (contract-of ft) (get ft swap)) ERR_INVALID_FUNGIBLE_TOKEN)
       (asserts! (is-eq (contract-of fees) (get fees swap)) ERR_INVALID_FEES_TRAIT)
-      (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
       (asserts! (is-eq tx-sender ft-receiver) ERR_INVALID_FT_RECEIVER) ;; ft-receiver is tx-sender  / assert out if the receiver is predetermined 
       (try! (contract-call? fees pay-fees ustx))

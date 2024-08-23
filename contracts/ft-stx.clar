@@ -80,7 +80,7 @@
         open: false,
         fees: (contract-of fees),
         in_contract: (contract-of ft),
-        in_amount: (get amount swap),
+        in_amount: amount,
         in_decimals: (unwrap! (contract-call? ft get-decimals) ERR_FT_FAILURE),
         out_contract: "STX",
         out-amount: ustx,

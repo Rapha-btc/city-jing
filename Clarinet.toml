@@ -10,6 +10,11 @@ path = 'contracts/fair.clar'
 clarity_version = 2
 epoch = 2.5
 
+[contracts.fake-fees]
+path = 'contracts/fake-fees.clar'
+clarity_version = 2
+epoch = 2.5
+
 [contracts.fees]
 path = 'contracts/fees.clar'
 clarity_version = 2

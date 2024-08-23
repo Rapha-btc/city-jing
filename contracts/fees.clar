@@ -15,26 +15,31 @@
 
 ;; Hold fees for the given amount in escrow.
 (define-public (hold-fees (ustx uint))
-  (begin
+  (let ((fee (jing-cash ustx)))
     (asserts! (or (is-eq contract-caller charging-ctr-bid) 
                   (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
-    (stx-transfer? (jing-cash ustx) tx-sender (as-contract tx-sender))))
+    (and (> fee u0)
+      (try! (stx-transfer? fee tx-sender (as-contract tx-sender))))
+    (ok true)))
 
 ;; Release fees for the given amount if swap was canceled by its creator
 (define-public (release-fees (ustx uint))
-  (let ((user tx-sender))
+  (let ((user tx-sender)
+        (fee (jing-cash ustx)))
     (asserts! (or (is-eq contract-caller charging-ctr-bid) 
                   (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
-    (as-contract (stx-transfer? (jing-cash ustx) tx-sender user)))) 
+    (and (> fee u0)
+      (try! (as-contract (stx-transfer? (jing-cash ustx) tx-sender user))))
+    (ok true))) 
 
 ;; Pay fee for the given amount if swap was executed.
 (define-public (pay-fees (ustx uint))
   (let ((fee (jing-cash ustx)))
     (asserts! (or (is-eq contract-caller charging-ctr-bid) 
                   (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
-    (if (> fee u0)
-      (as-contract (stx-transfer? fee tx-sender fee-receiver))
-      (ok true))))
+    (and (> fee u0)
+      (try! (as-contract (stx-transfer? fee tx-sender fee-receiver))))
+      (ok true)))
 
 (define-constant ERR_NOT_AUTH (err u404))
 ;; "The man who views the world at 50 the same as he did at 20 has wasted 30 years of his life."

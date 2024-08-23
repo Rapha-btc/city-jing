@@ -144,3 +144,6 @@
 (define-constant ERR_NOT_FT_SENDER (err u12))
 (define-constant ERR_FT_FAILURE (err u13))
 (define-constant ERR_NATIVE_FAILURE (err u99))
+;; (err u1) -- sender does not have enough balance to transfer 
+;; (err u2) -- sender and recipient are the same principal 
+;; (err u3) -- amount to send is non-positive

@@ -1,4 +1,4 @@
-(define-constant fee-receiver tx-sender)
+(define-data-var fee-receiver principal tx-sender)
 (define-constant charging-ctr-bid .stx-ft)
 (define-constant charging-ctr-ask .ft-stx)
 
@@ -38,8 +38,18 @@
     (asserts! (or (is-eq contract-caller charging-ctr-bid) 
                   (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
     (and (> fee u0)
-      (try! (as-contract (stx-transfer? fee tx-sender fee-receiver))))
+      (try! (as-contract (stx-transfer? fee tx-sender (var-get fee-receiver)))))
       (ok true)))
 
+;; Fee receiver Functions
+(define-public (set-fee-receiver (new-fee-receiver principal))
+  (begin
+    (asserts! (is-eq tx-sender (var-get fee-receiver)) ERR_NOT_FEE_RECEIVER)
+    (ok (var-set fee-receiver new-fee-receiver))))
+
+(define-read-only (get-fee-receiver)
+  (ok (var-get fee-receiver)))
+  
 (define-constant ERR_NOT_AUTH (err u404))
+(define-constant ERR_NOT_FEE_RECEIVER (err u405))
 ;; "The man who views the world at 50 the same as he did at 20 has wasted 30 years of his life."

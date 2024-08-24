@@ -1,10 +1,10 @@
-(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait
+(use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait) 
 ;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
 (define-constant THIS-CONTRACT (as-contract tx-sender))
 
 ;; Define the two allowed fee contracts
-(define-constant YIN-FEES .fees)
-(define-constant YANG-FEES .fake-fees)
+(define-constant YIN-FEES .yin)
+(define-constant YANG-FEES .yang)
 
 ;; the fee structure is defined by the calling client
 (define-trait fees-trait
@@ -28,10 +28,10 @@
     (ok true)))
 
 (define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
-  (contract-call? .send-many-memo send-many
+  (contract-call? 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo send-many
     (list {to: to,
             ustx: ustx,
-            memo: memo}))) ;; mainnet Rapha: 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.send-many-memo
+            memo: memo})))
 
 (define-private (is-valid-fees (fees <fees-trait>))
   (or (is-eq (contract-of fees) YIN-FEES)

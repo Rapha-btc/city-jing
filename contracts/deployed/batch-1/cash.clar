@@ -1,4 +1,3 @@
-;; SP2EZ389HBPTTTXDS0360D3EWQMZ27H9ZST1D4EQ6.ft-stx // asks
 (use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait) 
 ;; This contract is admin-less and immutable
 
@@ -74,7 +73,7 @@
 
 (define-public (offer (amount uint) (ustx uint) (stx-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
   (let ((id (var-get next-id)))
-    (asserts! (is-b1 ft) ERR_TOKEN_NOT_B1)
+    (asserts! (is-b1 (contract-of ft)) ERR_TOKEN_NOT_B1)
     (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
     (asserts! (map-insert swaps id
       {amount: amount, ft-sender: tx-sender, ustx: ustx, stx-sender: stx-sender,
@@ -98,7 +97,7 @@
     )
     (var-set next-id (+ id u1))
     (try! (contract-call? fees hold-fees ustx))
-    (match (ft-transfer-to amount ft (as-contract tx-sender) 0x636174616d6172616e2073776170)
+    (match (ft-transfer-to amount ft (as-contract tx-sender) 0x696E74656772617465)
       success (ok id)
       error (err (* error u100)))))
 
@@ -132,7 +131,7 @@
     )
     (match (as-contract (ft-transfer-to 
                 amount ft (get ft-sender swap)
-                0x72657665727420636174616d6172616e2073776170))
+                0x7365706172617465))
       success (ok success)
       error (err (* error u100)))))
 
@@ -168,11 +167,11 @@
             out-decimals: u6,
         }
       )
-      (match (stx-transfer-to ustx (get ft-sender swap) 0x636174616d6172616e2073776170)
+      (match (stx-transfer-to ustx (get ft-sender swap) 0x696E74656772617465)
         success-stx (begin
             (asserts! success-stx ERR_NATIVE_FAILURE)
             (match (as-contract (ft-transfer-to amount ft
-                ft-receiver 0x636174616d6172616e2073776170))
+                ft-receiver 0x696E74656772617465))
               success-ft (ok success-ft)
               error-ft (err (* error-ft u100))))
         error-stx (err (* error-stx u1000)))))

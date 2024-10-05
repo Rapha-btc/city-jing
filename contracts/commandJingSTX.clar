@@ -6,6 +6,9 @@
 ;; happy path submit-swap with simDIKO and simCash: ok true (B1 token)
 ;; a bunch of test from previous tests for simCash - reconfirmed good (u8, u12)
 ;; happy path cancel with simFRIE and simCash: ok true (B1 token)
+;; is-b1 simDIKO: true
+;; is-b1 simFRIE: true
+;; is-b1 fair: false
 
 (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fair 
     mint-to 

@@ -5,7 +5,7 @@
 (define-constant BATCH-1
   (list 
     .simDIKO
-    .simJING
+    .simFRIE
   ))
 
 (define-map b1-ft principal bool)
@@ -19,7 +19,7 @@
     (ok true)))
 
 ;; Define the two allowed fee contracts
-(define-constant YIN-FEES .yin)
+(define-constant YIN-FEES .simYin)
 (define-constant YANG-FEES .yang)
 
 ;; the fee structure is defined by the calling client
@@ -167,6 +167,9 @@
 (define-constant ERR_FT_FAILURE (err u13))
 (define-constant ERR_TOKEN_NOT_B1 (err u14))
 (define-constant ERR_NATIVE_FAILURE (err u99))
+;; (err u1) -- sender does not have enough balance to transfer 
+;; (err u2) -- sender and recipient are the same principal 
+;; (err u3) -- amount to send is non-positive
 
 ;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
 (initialize-b1)

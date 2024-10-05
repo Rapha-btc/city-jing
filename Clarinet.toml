@@ -5,8 +5,19 @@ authors = []
 telemetry = false
 cache_dir = './.cache'
 requirements = []
+
 [contracts.fair]
 path = 'contracts/fair.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.simDIKO]
+path = 'contracts/deployed/batch-1/wl-tokens/simDIKO.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.simFRIE]
+path = 'contracts/deployed/batch-1/wl-tokens/simFRIE.clar'
 clarity_version = 2
 epoch = 2.5
 
@@ -30,13 +41,8 @@ path = 'contracts/deployed/batch-1/simCash.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.yang]
-path = 'contracts/yang.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.yin]
-path = 'contracts/yin.clar'
+[contracts.simYin]
+path = 'contracts/simYin.clar'
 clarity_version = 2
 epoch = 2.5
 

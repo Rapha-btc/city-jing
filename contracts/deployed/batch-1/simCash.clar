@@ -5,7 +5,7 @@
 (define-constant BATCH-1
   (list 
     .simDIKO
-    .simJING
+    .simFRIE
   ))
 
 (define-map b1-ft principal bool)
@@ -19,7 +19,7 @@
     (ok true)))
 
 ;; Define the two allowed fee contracts
-(define-constant YIN-FEES .yin)
+(define-constant YIN-FEES .simYin)
 (define-constant YANG-FEES .yang)
 
 ;; the fee structure is defined by the calling client

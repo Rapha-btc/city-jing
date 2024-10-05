@@ -10,31 +10,6 @@ path = 'contracts/fair.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.fake-fees]
-path = 'contracts/fake-fees.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.fees]
-path = 'contracts/fees.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.ft-stx]
-path = 'contracts/ft-stx.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.invalid-fees]
-path = 'contracts/invalid-fees.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.not]
-path = 'contracts/not.clar'
-clarity_version = 2
-epoch = 2.5
-
 [contracts.send-many-memo]
 path = 'contracts/send-many-memo.clar'
 clarity_version = 2
@@ -45,15 +20,26 @@ path = 'contracts/sip-010-trait-ft-standard.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.stx-ft]
-path = 'contracts/stx-ft.clar'
+[contracts.simJing]
+path = 'contracts/deployed/batch-1/simJing.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.welsh]
-path = 'contracts/welsh.clar'
+[contracts.simCash]
+path = 'contracts/deployed/batch-1/simCash.clar'
 clarity_version = 2
 epoch = 2.5
+
+[contracts.yang]
+path = 'contracts/yang.clar'
+clarity_version = 2
+epoch = 2.5
+
+[contracts.yin]
+path = 'contracts/yin.clar'
+clarity_version = 2
+epoch = 2.5
+
 [repl.analysis]
 passes = ['check_checker']
 

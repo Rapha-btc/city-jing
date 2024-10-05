@@ -1,6 +1,6 @@
 (define-data-var fee-receiver principal tx-sender)
-(define-constant charging-ctr-bid .stx-ft)
-(define-constant charging-ctr-ask .ft-stx)
+(define-constant charging-jing .jing)
+(define-constant charging-cash .cash)
 
 ;; For information only.
 (define-public (get-fees (ustx uint))
@@ -16,8 +16,8 @@
 ;; Hold fees for the given amount in escrow.
 (define-public (hold-fees (ustx uint))
   (let ((fee (jing-cash ustx)))
-    (asserts! (or (is-eq contract-caller charging-ctr-bid) 
-                  (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
+    (asserts! (or (is-eq contract-caller charging-jing) 
+                  (is-eq contract-caller charging-cash))  ERR_NOT_AUTH)
     (and (> fee u0)
       (try! (stx-transfer? fee tx-sender (as-contract tx-sender))))
     (ok true)))
@@ -26,8 +26,8 @@
 (define-public (release-fees (ustx uint))
   (let ((user tx-sender)
         (fee (jing-cash ustx)))
-    (asserts! (or (is-eq contract-caller charging-ctr-bid) 
-                  (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
+    (asserts! (or (is-eq contract-caller charging-jing) 
+                  (is-eq contract-caller charging-cash))  ERR_NOT_AUTH)
     (and (> fee u0)
       (try! (as-contract (stx-transfer? (jing-cash ustx) tx-sender user))))
     (ok true))) 
@@ -35,8 +35,8 @@
 ;; Pay fee for the given amount if swap was executed.
 (define-public (pay-fees (ustx uint))
   (let ((fee (jing-cash ustx)))
-    (asserts! (or (is-eq contract-caller charging-ctr-bid) 
-                  (is-eq contract-caller charging-ctr-ask))  ERR_NOT_AUTH)
+    (asserts! (or (is-eq contract-caller charging-jing) 
+                  (is-eq contract-caller charging-cash))  ERR_NOT_AUTH)
     (and (> fee u0)
       (try! (as-contract (stx-transfer? fee tx-sender (var-get fee-receiver)))))
       (ok true)))

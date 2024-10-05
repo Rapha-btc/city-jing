@@ -1,7 +1,41 @@
 ;; SP2EZ389HBPTTTXDS0360D3EWQMZ27H9ZST1D4EQ6.stx-ft // bids
 (use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
-;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
-(define-constant THIS-CONTRACT (as-contract tx-sender))
+;; This contract is admin-less and immutable
+
+(define-constant BATCH-1
+  (list 
+    'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token
+    'SP2C1WREHGM75C7TGFAEJPFKTFTEGZKF6DFT6E2GE.kangaroo
+    'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-token-v2
+    'SP32AEEF6WW5Y0NMJ1S8SBSZDAY8R5J32NBZFPKKZ.nope
+    'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc
+    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.arkadiko-token
+    'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.tokensoft-token-v4k68639zxz
+    'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.velar-token
+    'SP1AY6K3PQV5MRT6R4S671NWW2FRVPKM0BR162CT6.leo-token
+    'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token
+    'SP3Y2ZSH8P7D50B0VBTSX11S7XSG24M1VB9YFQA4K.token-aeusdc
+    'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-susdt
+    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.usda-token
+    'SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.usdh-token-v1
+    'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex
+    'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-lqstx
+    'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.stsw-token-v4a
+    'SP3D6PV2ACBPEKYJTCMH7HEN02KP87QSP8KTEH335.mega
+    'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.auto-alex-v3
+    'SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X.friedger-token-v1
+    'SP27BB1Y2DGSXZHS7G9YHKTSH6KQ6BD3QG0AN3CR9.vibes-token
+  ))
+
+(define-map b1-ft principal bool)
+
+(define-private (add-b1-ft (token principal))
+  (map-set b1-ft token true))
+
+(define-private (initialize-b1)
+  (begin
+    (map add-b1-ft BATCH-1)
+    (ok true)))
 
 ;; Define the two allowed fee contracts
 (define-constant YIN-FEES .yin)
@@ -37,6 +71,7 @@
 ;; create a swap between btc and fungible token
 (define-public (offer (ustx uint) (amount uint) (ft-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
   (let ((id (var-get next-id)))
+    (asserts! (is-b1 ft) ERR_TOKEN_NOT_B1)
     (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
     (asserts! (map-insert swaps id
       {ustx: ustx, stx-sender: tx-sender, amount: amount, ft-sender: ft-sender,
@@ -45,7 +80,6 @@
       {
         type: "offer",
         swap_type: "STX-FT",
-        contract_address: THIS-CONTRACT,
         swap-id: id, 
         creator: tx-sender,
         counterparty: ft-sender,
@@ -79,7 +113,6 @@
       {
         type: "cancel",
         swap_type: "STX-FT",
-        contract_address: THIS-CONTRACT,
         swap-id: id, 
         creator: tx-sender,
         counterparty: (get ft-sender swap),
@@ -118,7 +151,6 @@
         {
             type: "swap",
             swap_type: "STX-FT",
-            contract_address: THIS-CONTRACT,
             swap-id: id, 
             creator: (get stx-sender swap),
             counterparty: tx-sender,
@@ -152,4 +184,11 @@
 (define-constant ERR_INVALID_FEES_TRAIT (err u11))
 (define-constant ERR_NOT_STX_SENDER (err u12))
 (define-constant ERR_FT_FAILURE (err u13))
+(define-constant ERR_TOKEN_NOT_B1 (err u14))
 (define-constant ERR_NATIVE_FAILURE (err u99))
+
+;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
+(initialize-b1)
+
+(define-read-only (is-b1 (token principal))
+  (default-to false (map-get? b1-ft token)))

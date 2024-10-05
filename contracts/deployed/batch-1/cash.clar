@@ -1,9 +1,7 @@
 ;; SP2EZ389HBPTTTXDS0360D3EWQMZ27H9ZST1D4EQ6.ft-stx // asks
 (use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait) 
-;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
-(define-constant THIS-CONTRACT (as-contract tx-sender))
+;; This contract is admin-less and immutable
 
-;; Define the whitelist
 (define-constant BATCH-1
   (list 
     'SP3NE50GEXFG9SZGTT51P40X2CKYSZ5CC4ZTZ7A2G.welshcorgicoin-token
@@ -22,22 +20,22 @@
     'SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.usdh-token-v1
     'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex
     'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-lqstx
-    'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.liquidity-token-stx-stsw
+    'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.stsw-token-v4a
     'SP3D6PV2ACBPEKYJTCMH7HEN02KP87QSP8KTEH335.mega
     'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.auto-alex-v3
     'SPN4Y5QPGQA8882ZXW90ADC2DHYXMSTN8VAR8C3X.friedger-token-v1
     'SP27BB1Y2DGSXZHS7G9YHKTSH6KQ6BD3QG0AN3CR9.vibes-token
-    'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.tokensoft-token-v4ktqebauw9
-    'SP213KNHB5QD308TEESY1ZMX1BP8EZDPG4JWD0MEA.fari-token-mn
   ))
 
-(define-private (is-b1 (token principal))
-  (fold check-token BATCH-1 false))
+(define-map b1-ft principal bool)
 
-(define-private (check-token (listed-token principal) (found bool))
-  (if found
-    true
-    (is-eq listed-token token)))
+(define-private (add-b1-ft (token principal))
+  (map-set b1-ft token true))
+
+(define-private (initialize-b1)
+  (begin
+    (map add-b1-ft BATCH-1)
+    (ok true)))
 
 ;; Define the two allowed fee contracts
 (define-constant YIN-FEES .yin)
@@ -76,7 +74,7 @@
 
 (define-public (offer (amount uint) (ustx uint) (stx-sender (optional principal)) (ft <fungible-token>) (fees <fees-trait>))
   (let ((id (var-get next-id)))
-    (asserts! (is-b1 (contract-of ft)) ERR_TOKEN_NOT_B1)
+    (asserts! (is-b1 ft) ERR_TOKEN_NOT_B1)
     (asserts! (is-valid-fees fees) ERR_INVALID_FEES)
     (asserts! (map-insert swaps id
       {amount: amount, ft-sender: tx-sender, ustx: ustx, stx-sender: stx-sender,
@@ -85,7 +83,6 @@
       {
         type: "offer",
         swap_type: "FT-STX",
-        contract_address: THIS-CONTRACT,
         swap-id: id, 
         creator: tx-sender,
         counterparty: stx-sender,
@@ -120,7 +117,6 @@
       {
         type: "cancel",
         swap_type: "FT-STX",
-        contract_address: THIS-CONTRACT,
         swap-id: id, 
         creator: tx-sender,
         counterparty: (get stx-sender swap),
@@ -159,7 +155,6 @@
         {
             type: "swap",
             swap_type: "FT-STX",
-            contract_address: THIS-CONTRACT,
             swap-id: id, 
             creator: (get ft-sender swap),
             counterparty: tx-sender,
@@ -195,3 +190,9 @@
 ;; (err u1) -- sender does not have enough balance to transfer 
 ;; (err u2) -- sender and recipient are the same principal 
 ;; (err u3) -- amount to send is non-positive
+
+;; The road to prosperity is often a roundabout journey, where detours and indirect routes reveal the most valuable insights and innovations.
+(initialize-b1)
+
+(define-read-only (is-b1 (token principal))
+  (default-to false (map-get? b1-ft token)))

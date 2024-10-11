@@ -1,8 +1,6 @@
 (define-data-var fee-receiver principal tx-sender)
 (define-constant charging-cash .scash)
 
-(define-constant ft-contract .cha) ;; 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token)
-
 ;; For information only.
 (define-public (get-fees (ustx uint))
   (ok (jing-cash ustx)))
@@ -19,7 +17,7 @@
   (let ((fee (jing-cash ustx)))
     (asserts! (is-eq contract-caller charging-cash) ERR_NOT_AUTH)
     (and (> fee u0)
-      (try! (contract-call? ft-contract transfer fee tx-sender (as-contract tx-sender) none)))
+      (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha transfer fee tx-sender (as-contract tx-sender) none)))
     (ok true)))
 
 ;; Release fees for the given amount if swap was canceled by its creator
@@ -28,7 +26,7 @@
         (fee (jing-cash ustx)))
     (asserts! (is-eq contract-caller charging-cash) ERR_NOT_AUTH)
     (and (> fee u0)
-      (try! (as-contract (contract-call? ft-contract transfer (jing-cash ustx) tx-sender user none))))
+      (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha transfer (jing-cash ustx) tx-sender user none))))
     (ok true))) 
 
 ;; Pay fee for the given amount if swap was executed.
@@ -36,7 +34,7 @@
   (let ((fee (jing-cash ustx)))
     (asserts! (is-eq contract-caller charging-cash) ERR_NOT_AUTH)
     (and (> fee u0)
-      (try! (as-contract (contract-call? ft-contract transfer fee tx-sender (var-get fee-receiver) none))))
+      (try! (as-contract (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha transfer fee tx-sender (var-get fee-receiver) none))))
       (ok true)))
 
 ;; Fee receiver Functions

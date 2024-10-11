@@ -1,25 +1,22 @@
-;; attempt to offer simJing with fair: u14 not b1 correctly
-;; happy path submit-swap with simDIKO and simYin: ok true (B1 token)
-;; a bunch of test from previous tests for simJing - reconfirmed good (u8, u12)
-;; happy path cancel with simFRIE and simYin: ok true (B1 token)
-;; attempt to offer simCash with fair: u14 not b1 correctly
-;; happy path submit-swap with simDIKO and simCash: ok true (B1 token)
-;; a bunch of test from previous tests for simCash - reconfirmed good (u8, u12)
-;; happy path cancel with simFRIE and simCash: ok true (B1 token)
-;; is-b1 simDIKO: true
-;; is-b1 simFRIE: true
-;; is-b1 fair: false
-
-(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.fair 
-    mint-to 
-    u100000000000 
-    'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC)
+;; create u0 :: cancel u0 = ok true X2
+;; cancel u0 with invalide stx sender: err u12 
+;; submit-swap own swap u2000: good
+;; submit-swap without enough balance u1000: good
+;; submit-swap happy path ok true good
+;; submit-swap / cancel -> again already done u7 good
+;; create specific offer cancel, and create again : ok true good
+;; submit swap from not beneficiary u9 invalid stx receiver: good
+;; submit swap from beneficiary happy path ok true good
 
 
 (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha 
     mint 
     u100000000000
     'ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC)
+    (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha 
+    mint 
+    u100000000000
+    'STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6)
 
 
 (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg 
@@ -27,13 +24,33 @@
     u100000000000 
     'ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG)
 
+::set_tx_sender ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
 
-(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.scash 
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sjing 
     offer
     u2000000000
     u300000000
-    none
-    'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.swater)
+    (some 'STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6))
+
+
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sjing 
+    cancel
+    u1)
+
+::set_tx_sender ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
+::set_tx_sender ST2NEB84ASENDXKYGJPQW86YXQCEFEX2ZQPG87ND
+::set_tx_sender STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6
+
+(contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sjing 
+    submit-swap
+    u1)
+
+(contract-call? .scash ft-transfer-2 u1 'STNHKEPYEPJ8ET55ZZ0M5A34J0R3N5FM2CMMMAZ6 0x696E74656772617465)
+
+(contract-call? .scash ft-transfer-3 u1 0x696E74656772617465)
+
+(contract-call? .scash inside-ft u1 u1 none)
+
 
 (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.simCash 
     offer
@@ -62,7 +79,7 @@
 ::set_tx_sender ST1SJ3DTE5DN7X54YDH5D64R3BCB6A2AG2ZQ8YPD5
 ::get_assets_maps
 ::set_tx_sender ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-::set_tx_sender ST2REHHS5J3CERCRBEPMGH7921Q6PYKAADT7JP2VB
+::set_tx_sender ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG
 ::set_tx_sender ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
 ::advance_chain_tip 1000
 

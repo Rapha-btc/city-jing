@@ -26,6 +26,12 @@
 (define-data-var token-decimals uint u6)
 
 ;; --- Authorization check
+(define-public (mint (amount uint) (recipient principal))
+  (begin
+    ;; (asserts! (is-eq contract-caller .arkadiko-dao) (err ERR-NOT-AUTHORIZED))
+    (ft-mint? charisma amount recipient)
+  )
+)
 
 (define-public (is-dao-or-extension)
 (ok true))
@@ -113,7 +119,6 @@
 		(ok (map dmg-mint-many-iter recipients))
 	)
 )
-
 ;; --- Public functions
 
 ;; sip010-ft-trait

@@ -1,11 +1,11 @@
 (use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) 
 ;; This contract is admin-less and immutable
 
-(define-constant stx-contract .dmg) ;;  'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token)
-(define-constant ft-contract .cha) ;; 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token)
+(define-constant stx-contract 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg);;  'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token)
+(define-constant ft-contract 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha);; 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token)
 
 ;; Define the two allowed fee contracts
-(define-constant YANG-FEES .swater)
+(define-constant YANG-FEES 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.swater)
 
 ;; the fee structure is defined by the calling client
 (define-trait fees-trait
@@ -25,7 +25,7 @@
 
 (define-private (ft-transfer-to (amount uint) (to principal) (memo (buff 34)))
   (begin
-    (try! (contract-call? ft-contract transfer amount tx-sender to (some memo)))
+    (try! (contract-call? .cha transfer amount tx-sender to (some memo)))
     (ok true)))
 
 (define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
@@ -51,10 +51,10 @@
         fees: (contract-of fees),
         in_contract: ft-contract, 
         in_amount: amount,
-        in_decimals: (unwrap! (contract-call? ft-contract get-decimals) ERR_FT_FAILURE),
-        out_contract: stx-contract,
+        in_decimals: (unwrap! (contract-call? .cha get-decimals) ERR_FT_FAILURE),
+        out_contract: .dmg,
         out-amount: ustx,
-        out-decimals: (unwrap! (contract-call? stx-contract get-decimals) ERR_FT_FAILURE),
+        out-decimals: (unwrap! (contract-call? .dmg get-decimals) ERR_FT_FAILURE),
       }
     )
     (var-set next-id (+ id u1))
@@ -82,9 +82,9 @@
         counterparty: (get stx-sender swap),
         open: false,
         fees: (contract-of fees),
-        in_contract: ft-contract,
+        in_contract: .cha,
         in_amount: amount,
-        in_decimals: (unwrap! (contract-call? ft-contract get-decimals) ERR_FT_FAILURE),
+        in_decimals: (unwrap! (contract-call? .cha get-decimals) ERR_FT_FAILURE),
         out_contract: stx-contract,
         out-amount: ustx,
         out-decimals: (unwrap! (contract-call? stx-contract get-decimals) ERR_FT_FAILURE),

@@ -1,5 +1,5 @@
 (define-data-var fee-receiver principal tx-sender)
-(define-constant charging-cash .cha-dmg)
+(define-constant charging-cash .cha-rev)
 
 ;; For information only.
 (define-public (get-fees (ustx uint))

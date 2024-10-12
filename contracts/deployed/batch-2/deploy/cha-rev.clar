@@ -1,4 +1,4 @@
-(use-trait fungible-token .sip-010-trait-ft-standard.sip-010-trait) 
+(use-trait fungible-token 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait) 
 ;; This contract is admin-less and immutable
 
 (define-map swaps uint {amount: uint, ft-sender: principal, ustx: uint, stx-sender: (optional principal), open: bool})
@@ -12,11 +12,11 @@
 
 (define-private (ft-transfer-to (amount uint) (to principal) (memo (buff 34)))
   (begin
-    (try! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha transfer amount tx-sender to (some memo)))
+    (try! (contract-call? 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token transfer amount tx-sender to (some memo)))
     (ok true)))
 
 (define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
-   (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg transfer ustx tx-sender to (some memo)))
+   (contract-call? 'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token transfer ustx tx-sender to (some memo)))
 
 (define-public (offer (amount uint) (ustx uint) (stx-sender (optional principal)))
   (let ((id (var-get next-id)))
@@ -31,16 +31,16 @@
         creator: tx-sender,
         counterparty: stx-sender,
         open: true,
-        in_contract: "'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha", 
+        in_contract: "SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token", 
         in_amount: amount,
-        in_decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha get-decimals) ERR_FT_FAILURE),
-        out_contract: "'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg",
+        in_decimals: (unwrap! (contract-call? 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token get-decimals) ERR_FT_FAILURE),
+        out_contract: "SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token",
         out-amount: ustx,
-        out-decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg get-decimals) ERR_FT_FAILURE),
+        out-decimals: (unwrap! (contract-call? 'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token get-decimals) ERR_FT_FAILURE),
       }
     )
     (var-set next-id (+ id u1))
-    (try! (contract-call? .swater hold-fees ustx))
+    (try! (contract-call? .agua hold-fees amount))
     (match (ft-transfer-to amount (as-contract tx-sender) 0x696E74656772617465)
       success (ok id)
       error (err (* error u100)))))
@@ -53,7 +53,7 @@
       (asserts! (is-eq tx-sender (get ft-sender swap)) ERR_NOT_FT_SENDER)
       (asserts! (get open swap) ERR_ALREADY_DONE) 
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
-      (try! (contract-call? .swater release-fees ustx)) 
+      (try! (contract-call? .agua release-fees amount)) 
     (print 
       {
         type: "cancel",
@@ -62,12 +62,12 @@
         creator: tx-sender,
         counterparty: (get stx-sender swap),
         open: false,
-        in_contract: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha,
+        in_contract: "SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token",
         in_amount: amount,
-        in_decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha get-decimals) ERR_FT_FAILURE),
-        out_contract: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg,
+        in_decimals: (unwrap! (contract-call? 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token get-decimals) ERR_FT_FAILURE),
+        out_contract: "SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token",
         out-amount: ustx,
-        out-decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg get-decimals) ERR_FT_FAILURE),
+        out-decimals: (unwrap! (contract-call? 'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token get-decimals) ERR_FT_FAILURE),
       }
     )
     (match (as-contract (ft-transfer-to 
@@ -85,7 +85,7 @@
       (asserts! (get open swap) ERR_ALREADY_DONE)
       (asserts! (map-set swaps id (merge swap {open: false})) ERR_NATIVE_FAILURE)
       (asserts! (is-eq tx-sender ft-receiver) ERR_INVALID_FT_RECEIVER) ;; ft-receiver is tx-sender  / assert out if the receiver is predetermined 
-      (try! (contract-call? .swater pay-fees ustx))
+      (try! (contract-call? .agua pay-fees amount))
       (print 
         {
             type: "swap",
@@ -94,12 +94,12 @@
             creator: (get ft-sender swap),
             counterparty: tx-sender,
             open: false,
-            in_contract: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha,
+            in_contract: "SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token",
             in_amount: amount,
-            in_decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.cha get-decimals) ERR_FT_FAILURE),
-            out_contract: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg,
+            in_decimals: (unwrap! (contract-call? 'SP2ZNGJ85ENDY6QRHQ5P2D4FXKGZWCKTB2T0Z55KS.charisma-token get-decimals) ERR_FT_FAILURE),
+            out_contract: "SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token",
             out-amount: ustx,
-            out-decimals: (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.dmg get-decimals) ERR_FT_FAILURE),
+            out-decimals: (unwrap! (contract-call? 'SP2D5BGGJ956A635JG7CJQ59FTRFRB0893514EZPJ.dme000-governance-token get-decimals) ERR_FT_FAILURE),
         }
       )
       (match (stx-transfer-to ustx (get ft-sender swap) 0x696E74656772617465)

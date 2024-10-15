@@ -11,13 +11,13 @@ path = 'contracts/fair.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.dmg]
-path = 'contracts/deployed/batch-2/dmg.clar'
+[contracts.simDIKO]
+path = 'contracts/deployed/batch-1/wl-tokens/simDIKO.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.cha]
-path = 'contracts/deployed/batch-2/cha.clar'
+[contracts.simFRIE]
+path = 'contracts/deployed/batch-1/wl-tokens/simFRIE.clar'
 clarity_version = 2
 epoch = 2.5
 
@@ -31,23 +31,18 @@ path = 'contracts/sip-010-trait-ft-standard.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.sjing]
-path = 'contracts/deployed/batch-2/test/sjing.clar'
+[contracts.simJing]
+path = 'contracts/deployed/batch-1/simJing.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.scash]
-path = 'contracts/deployed/batch-2/test/scash.clar'
+[contracts.simCash]
+path = 'contracts/deployed/batch-1/simCash.clar'
 clarity_version = 2
 epoch = 2.5
 
-[contracts.sfire]
-path = 'contracts/deployed/batch-2/test/sfire.clar'
-clarity_version = 2
-epoch = 2.5
-
-[contracts.swater]
-path = 'contracts/deployed/batch-2/test/swater.clar'
+[contracts.simYin]
+path = 'contracts/simYin.clar'
 clarity_version = 2
 epoch = 2.5
 

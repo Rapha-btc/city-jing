@@ -43,12 +43,6 @@
     (try! (contract-call? ft transfer amount tx-sender to (some memo)))
     (ok true)))
 
-(define-private (stx-transfer-to (ustx uint) (to principal) (memo (buff 34)))
-  (contract-call? .send-many-memo send-many
-    (list {to: to,
-            ustx: ustx,
-            memo: memo}))) ;; 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE
-
 (define-private (is-valid-fees (fees <fees-trait>))
   (or (is-eq (contract-of fees) YIN-FEES)
       (is-eq (contract-of fees) YANG-FEES)))
@@ -149,7 +143,7 @@
             out-decimals: u6,
         }
       )
-      (match (stx-transfer-to ustx (get ft-sender swap) 0x636174616d6172616e2073776170)
+       (match (stx-transfer? ustx tx-sender (get ft-sender swap))
         success-stx (begin
             (asserts! success-stx ERR_NATIVE_FAILURE)
             (match (as-contract (ft-transfer-to amount ft
